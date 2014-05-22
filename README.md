@@ -9,3 +9,5 @@ Statistics and R tutorial at the University of Trier, Summer 2014.
 Implementing a TTR function.
 ### Session 03
 Working with XML files.
+### Session 04
+Knitr examples for literal programming, descriptive statistics.

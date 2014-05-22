@@ -1,0 +1,86 @@
+# Deskriptive Statistik
+
+## Datenerhebung
+
+Wir lesen XML-Dateien aus dem Tüba-D/Z-Korpus ein und extrahieren *Lemmata* und laufende *Wortformen*:
+```{r reading_XML, highlight = TRUE, results = 'hide', echo = TRUE, cache = TRUE}
+library(XML)
+
+tokens <- NULL
+
+xmlEventParse(
+  "../data/t_990505_47.xml", 
+  handlers = list(
+    't' = function(name, attr) {
+      tokens <<- c(tokens, attr['word'])
+      ## types,
+      ## morphology
+      }
+    ),
+  addContext = FALSE
+  )
+
+names(tokens) <- NULL
+## Eine Alternative? Vielleicht `unname`
+```
+
+```{r results, highlight = TRUE, echo = TRUE}
+head(tokens)
+```
+
+Wir müssen unsere Daten auch bereinigen:
+```{r}
+# unique(tokens[nchar(tokens) == 1])
+
+# tokens[-which(nchar(tokens) == 1)]
+```
+
+
+Es gibt insgesamt `r length(tokens)` Token in dem eingelesenen Text, davon sind `r length(unique(tokens))` nur einmal vorgekommen.
+
+## Werte der zentralen Tendenz
+
+Wir können die durchschnittliche Länge der Token nach der folgenden Formel berechnen:
+$$
+\bar x = \frac{1}{n}\sum x_i
+$$
+
+Dabei ist $n$ die Anzahl der Beobachtungen. Wir implementieren unsere eigene Formel:
+```{r mean_formula, highlight = TRUE}
+n <- length(tokens)
+## ...
+```
+
+## Graphiken
+
+Wir können eine Rangfrequenzdastellung als Barplot präsentiren:
+```{r barplot}
+barplot(sort(table(tokens), decreasing = T))
+```
+
+## Berechnung der durchschnittlichen Tokenlänge:
+```{r}
+  token.length <- nchar(tokens)
+  mean(token.length)
+```
+
+## Quantilberechnung
+1. Was sind die drei **Quartile**?
+2. Wie ist der Median $\tilde x_{0,5}$?
+
+## Darstellung mit einem Histogramm
+
+```{r histogramm}
+#hist(token.length)
+hist(token.length, breaks = 0:max(token.length))
+abline(v = median(token.length), col = 'red', lwd = 2)
+abline(v = mean(token.length), col = 'green', lwd = 2)
+abline(v = which.max(tabulate(token.length)), col = 'blue', lwd = 2)
+```
+
+## Darstellung mit einem Barplot:
+```{r barplot2, fig.align = 'center'}
+fr.distribution <- tabulate(token.length)
+barplot(fr.distribution, names.arg = seq_along(fr.distribution), las = 3)
+```
+
