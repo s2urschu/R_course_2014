@@ -1,0 +1,165 @@
+# Deskriptive Statistik
+
+## Datenerhebung
+
+Wir lesen XML-Dateien aus dem TÃ¼ba-D/Z-Korpus ein und extrahieren *Lemmata* und laufende *Wortformen*:
+```{r reading_XML, highlight = TRUE, results = 'hide', echo = TRUE, cache = TRUE}
+library(XML)
+
+tokens <- NULL
+types <- NULL
+
+xmlEventParse(
+  "../data/t_890103_208.xml", 
+  handlers = list(
+    't' = function(name, attr) {
+      tokens <<- c(tokens, attr['word']); types <<- c(types, attr['lemma'])
+      ## types,
+      ## morphology
+      }
+    ),
+  addContext = FALSE
+  )
+unique.types <- unique(types, fromLast = TRUE)
+length(tokens)
+length(types)
+
+names(tokens) <- NULL
+names(types) <- NULL
+## Eine Alternative? Vielleicht `unname`
+```
+
+```{r results, highlight = TRUE, echo = TRUE}
+head(tokens)
+head(types)
+```
+
+Wir mÃ¼ssen unsere Daten auch bereinigen:
+```{r results = 'hide'}
+
+unique(tokens[nchar(tokens) == 1])
+
+tokens[-which(nchar(tokens) == 1)]
+
+unique(types[nchar(types) == 1])
+
+types[-which(nchar(types) == 1)]
+```
+
+
+Es gibt insgesamt `r length(tokens)` Token in dem eingelesenen Text, davon sind `r length(unique(tokens))` nur einmal vorgekommen.
+
+Es gibt insgesamt `r length(types)` Types in dem eingelesenen Text, davon sind `r length(unique.types)` nur einmal vorgekommen.
+
+## Werte der zentralen Tendenz
+
+Wir kÃ¶nnen die durchschnittliche LÃ¤nge der Token nach der folgenden Formel berechnen:
+$$
+\bar x = \frac{1}{n}\sum x_i
+$$
+
+Dabei ist $n$ die Anzahl der Beobachtungen. Wir implementieren unsere eigene Formel:
+```{r mean_formula, highlight = TRUE}
+n <- length(tokens)
+
+n <- length(types)
+## ...
+```
+
+## Graphiken
+
+Wir kÃ¶nnen eine Rangfrequenzdastellung als Barplot prÃ¤sentiren:
+```{r barplot}
+barplot(sort(table(tokens), decreasing = T))
+
+barplot(sort(table(types), decreasing = T))
+```
+
+## Berechnung der durchschnittlichen TokenlÃ¤nge:
+```{r}
+  token.length <- nchar(tokens)
+  mean(token.length)
+
+type.length <- nchar(types)
+  mean(type.length)
+```
+
+## Quantilberechnung
+1. Was sind die drei **Quartile**?
+2. Wie ist der Median $\tilde x_{0,5}$?
+
+## Darstellung mit einem Histogramm (für klassierte Daten)
+
+```{r histogramm}
+#hist(token.length)
+hist(token.length, breaks = 0:max(token.length))
+abline(v = median(token.length), col = 'red', lwd = 2)
+abline(v = mean(token.length), col = 'green', lwd = 2)
+abline(v = which.max(tabulate(token.length)), col = 'blue', lwd = 2)
+
+#hist(type.length)
+hist(type.length, breaks = 0:max(type.length))
+abline(v = median(type.length), col = 'red', lwd = 2)
+abline(v = mean(type.length), col = 'green', lwd = 2)
+abline(v = which.max(tabulate(type.length)), col = 'blue', lwd = 2)
+```
+
+## Darstellung mit einem Barplot:
+## Was bedeutet fr.distribution????
+```{r barplot2, fig.align = 'center'}
+#barplot(token.length)
+fr.distribution <- tabulate(token.length)
+barplot(main="Barplot of token.length", xlab="token.length", ylab="Frequency", fr.distribution, names.arg = seq_along(fr.distribution), las = 1)
+abline(v = median(token.length), col = 'brown1', lwd = 2)
+abline(v = mean(token.length), col = 'darkgoldenrod1', lwd = 2)
+abline(v = which.max(tabulate(token.length)), col = 'darkmagenta', lwd = 2)
+
+#barplot(type.length)
+fr.distribution <- tabulate(type.length)
+barplot(main="Barplot of type.length", xlab="type.length", ylab="Frequency", fr.distribution, names.arg = seq_along(fr.distribution), las = 1)
+abline(v = median(type.length), col = 'brown1', lwd = 2)
+abline(v = mean(type.length), col = 'darkgoldenrod1', lwd = 2)
+abline(v = which.max(tabulate(type.length)), col = 'darkmagenta', lwd = 2)
+```
+
+## Maße der zentralen Tendenz
+
+### Modus
+
+$h (X = \bar x_M) = max_i h (x_i)$
+
+
+### Median
+
+#### Für nicht gruppierte Daten mit ungeraden n
+
+$\tilde x_{0,5} = x_{(n+1) / 2}$
+
+
+#### Für nicht gruppierte Daten mit geraden n
+
+$\tilde x_{0,5} = x_{1 / 2 \cdot [x_{n / 2} + x_{n / 2 + 1}]}$
+
+
+#### Für gruppierte Daten
+
+$\tilde x_{0,5} = x_i \quad \textrm{wenn} \  H_{i-1} < 0,5 \  \textrm{und} \  H_i > 0,5$
+
+$\tilde x_{0,5} = \frac{1}{2} (x_i + x_{i+1}) \quad \textrm{wenn} \  H_i = 0,5$
+
+
+### Arithmetisches Mittel
+
+#### Ungeweogenes arithemetisches Mittel für ungruppierte Daten
+
+$\bar x = \frac{1}{n} \sum_i x_i$
+
+
+#### Gewogenes arithemtisches Mittel für ungruppierte Daten für absolute Häufigkeiten
+
+$\bar x = \frac{1}{n} \sum_i x_i \cdot n_i$
+
+
+#### Gewogenes arithemtisches Mittel für gruppierte Daten für absolute Häufigkeiten
+
+$\bar x = \sum_i x_i \cdot n_i$
