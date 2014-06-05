@@ -139,5 +139,22 @@ wordcloud(names(sorted.matrix), sorted.matrix, scale=c(4,0.5),
 
     x[sample(length(x$Klasse)),] # Mehrmals ausprobieren.
 
+## Deskriptiv statistics
+```{r}
+library(moments)
+
+random.vector <- rnorm(100)
+str(random.vector)
+summary(random.vector)
+mean(random.vector)
+median(random.vector)
+quantile(random.vector, c(0.25, 0.5, 0.75))
+sd(random.vector)
+var(random.vector)
+mad(random.vector)
+skewness(random.vector)
+kurtosis(random.vector)
+    
+```
 
 ## Graphische Darstellung
