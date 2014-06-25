@@ -1,0 +1,63 @@
+# Extract from XML
+
+Wir lesen Types, Tokens und Wortarten aus einer XML-Datei des TUEBA-DZ ein und analysieren die Klassen der Wortarten.
+
+
+```{r reading_XML, highlight = TRUE, results = 'hide', echo = TRUE, cache = TRUE}
+library(XML)
+
+tokens <- NULL
+types <- NULL 
+wordclass <- NULL 
+
+xmlEventParse(
+  "t_890102_84.xml",
+  handlers = list(
+    't' = function(name, attr) {
+      tokens <<- c(tokens, attr['word']); types <<- c(types, attr['lemma']);
+      wordclass <<- c(wordclass, attr['pos'])
+
+      }
+    ),
+  addContext = FALSE
+  )
+unique.types <- unique(types, fromLast = TRUE)
+length(tokens)
+length(types)
+length (wordclass)
+
+names(tokens) <- NULL
+names(types) <- NULL
+names(wordclass) <- NULL
+```
+Datenbereinigung
+```{r results ='hide'}
+unique(tokens[nchar(tokens) == 1])
+tokens[-which(nchar(tokens) == 1)]
+unique(types[nchar(types) == 1])
+types[-which(nchar(types) == 1)]
+unique(wordclass[nchar(wordclass) == 1])
+wordclass[-which(nchar(wordclass) == 1)]
+```
+
+Es gibt insgesamt `r length(tokens)` Token in dem eingelesenen Text, davon sind `r length(unique(tokens))` nur einmal vorgekommen.
+
+Es gibt insgesamt `r length(types)` Types in dem eingelesenen Text, davon sind `r length(unique(types))` nur einmal vorgekommen. 
+
+Es gibt insgesamt `r length(unique(wordclass))` Wortklassen im Text.
+
+```
+class <- c("ART", "ADJA", "NN", "APPR", "$,", "KOUS", "PPER", "ADV", "NE", "VVFIN", "CARD", "VVPP", "$.", "PIDAT", "KON", "VAFIN", "ADJD", "PDS", "PRF", "TRUNC", "APZR", "PRELS", "PDAT", "PTKVZ", "$(", "PIAT", "PPOSAT", "KOUI", "PTKNEG", "VAINF", "PTKZU", "VMINF", "PIS", "PROP", "KOKOM", "VMFIN", "VVINF", "APPRART", "PWAV", "VVIZU", "PWS", "PRELAT", "VAPP")
+
+openclass <- ("ADV", "ADJA", "ADJD", "NN", "VAINF", "VVFIN", "VVPP", "VAFIN", "VMINF", "VMFIN", "VVINF", "VVIZU", "VAPP")
+
+(ifelse (wordclass %in% openclass,'offen', 'geschlossen'))
+x <- ("tokens", "types", "wordclass")
+```
+
+```{r dataframe, highlight = TRUE, echo = TRUE, cache = TRUE}
+
+x <- data.frame(tokens, types, wordclass)
+x
+```
+
