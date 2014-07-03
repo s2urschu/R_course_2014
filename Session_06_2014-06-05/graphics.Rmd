@@ -6,7 +6,7 @@
 
 
 ## Frames speichern:
-  
+
     write.table(x, file=, sep='\t') # Siehe `?write.table`
 
 ## Frames einlesen:
@@ -44,8 +44,9 @@ stadt1 <- c(-5, -12, 5, 12, 15, 18, 22, 23, 20, 26, 8, 1)
 stadt2 <- c(6, 7, 8, 9, 10, 12, 16, 15, 11, 9, 8, 7)
 
 
-
-#pdf('out.pdf')
+#Mit pdf(name) und def.off() kann die Graphik in einer PDF gespeichert werden. Aber entweder PDF oder Knit!
+#pdf('out.pdf') 
+# Alles kann man in ?par nachlesen.
 plot(c(1:12), stadt1, type='b', col='dark red',
      xlim=c(0,12), ylim=c(min(stadt1, stadt2),
                           max(stadt1, stadt2)),
@@ -74,6 +75,9 @@ library(plotrix)
 POS <- c(3,4,5,3,1,2,2)
 labs <- c('A', 'M', 'N', 'P', 'Part', 'V', 'Adj')
 names(POS) <- c('A', 'M', 'N', 'P', 'Part', 'V', 'Adj')
+
+# Mit table(POS) kann man sich ein Kuchendiagramm in textueller Form anzeigen lassen. 
+# Mit prop.table(table(POS)) kann man sich die relative Frequenz der Werte der Tabelle anzeigen lassen.
 
 par(mfrow=c(1,2))
 
