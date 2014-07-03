@@ -1,8 +1,6 @@
 # Extract from XML
 
-Wir lesen Types, Tokens und Wortarten aus einer XML-Datei des TUEBA-DZ ein und analysieren die Klassen der Wortarten.
-
-
+Einlesen von Types, Tokens und Wortarten aus einer XML-Datei des TUEBA-DZ und Analyse der Klassen der Wortarten.
 ```{r reading_XML, highlight = TRUE, results = 'hide', echo = TRUE, cache = TRUE}
 library(XML)
 
@@ -46,18 +44,76 @@ Es gibt insgesamt `r length(types)` Types in dem eingelesenen Text, davon sind `
 
 Es gibt insgesamt `r length(unique(wordclass))` Wortklassen im Text.
 
-```
-class <- c("ART", "ADJA", "NN", "APPR", "$,", "KOUS", "PPER", "ADV", "NE", "VVFIN", "CARD", "VVPP", "$.", "PIDAT", "KON", "VAFIN", "ADJD", "PDS", "PRF", "TRUNC", "APZR", "PRELS", "PDAT", "PTKVZ", "$(", "PIAT", "PPOSAT", "KOUI", "PTKNEG", "VAINF", "PTKZU", "VMINF", "PIS", "PROP", "KOKOM", "VMFIN", "VVINF", "APPRART", "PWAV", "VVIZU", "PWS", "PRELAT", "VAPP")
+```{r}
+class <- c("ART", "ADJA", "NN", "APPR", "$,", "KOUS", "PPER", "NE", "VVFIN", "CARD", "VVPP", "$.", "PIDAT", "KON", "VAFIN", "ADJD", "PDS", "PRF", "TRUNC", "APZR", "PRELS", "PDAT", "PTKVZ", "$(", "PIAT", "PPOSAT", "KOUI", "PTKNEG", "VAINF", "PTKZU", "VMINF", "PIS", "PROP", "KOKOM", "VMFIN", "VVINF", "APPRART", "PWAV", "VVIZU", "PWS", "PRELAT", "VAPP")
 
 openclass <- ("ADV", "ADJA", "ADJD", "NN", "VAINF", "VVFIN", "VVPP", "VAFIN", "VMINF", "VMFIN", "VVINF", "VVIZU", "VAPP")
 
-(ifelse (wordclass %in% openclass,'offen', 'geschlossen'))
+ifelse (wordclass %in% openclass,'offen', 'geschlossen')
 x <- ("tokens", "types", "wordclass")
 ```
 
+Als Dataframe abspeichern, eine Tabelle erstellen und einlesen.
 ```{r dataframe, highlight = TRUE, echo = TRUE, cache = TRUE}
 
 x <- data.frame(tokens, types, wordclass)
+
+x <- write.table(x, file= "data.frame.ttw.csv", sep= '\t')
+
+x <- read.table(file= "data.frame.ttw.csv", header= TRUE, row.names= 1)
+
 x
+
+save(x, file= "x.ttw.RData")
 ```
 
+
+Zugriff auf das Frameelement wordclass
+``` {r Frameelemente ansprechen}
+x$wordclass
+
+attach(x)
+wordclass
+x[3]
+```
+
+Ein Kuchendiagramm der Wortarten erstellen
+```{r Kuchendiagramme}
+library(plotrix)
+POS <- c(161, 74, 242, 120, 100, 27, 45, 64, 137, 73, 11, 29, 79, 1, 20, 36, 32, 4, 9, 9, 3, 12, 59, 4, 15, 2, 6, 1, 6, 6, 10, 4, 5, 12, 24, 3, 2, 2, 1)
+labs <- c('ART', 'ADJA', 'NN', 'APPR', '$,', 'KOUS', 'PPER', 'ADV', 'NE', 'VVFIN', 'CARD', 'VVPP', '$.', 'PIDAT', 'KON', 'VAFIN', 'ADJD', 'PDS', 'PRF', 'PRELS', 'PDAT', 'PTKVZ', '$(', 'PIAT', 'PPOSAT', 'KOUI', 'PTKNEG', 'VAINV', 'PTKZU', 'PIS', 'PROP', 'KOKOM', 'VMFIN', 'VVINF', 'APPRART', 'PWAV', 'VVIZU', 'PWS', 'VAPP')
+names(POS) <- c('ART', 'ADJA', 'NN', 'APPR', '$,', 'KOUS', 'PPER', 'ADV', 'NE', 'VVFIN', 'CARD', 'VVPP', '$.', 'PIDAT', 'KON', 'VAFIN', 'ADJD', 'PDS', 'PRF', 'PRELS', 'PDAT', 'PTKVZ', '$(', 'PIAT', 'PPOSAT', 'KOUI', 'PTKNEG', 'VAINF', 'PTKZU', 'PIS', 'PROP', 'KOKOM', 'VMFIN', 'VVINF', 'APPRART', 'PWAV', 'VVIZU', 'PWS', 'VAPP')
+par(mfrow=c(1,2))
+
+pie(POS, main="Kuchendiagramm aller Wortarten")
+
+library(plotrix)
+POS2 <- c(74, 242, 64, 73, 29, 36, 32, 1, 5, 12, 2, 1)
+labs <- c('ADJA', 'NN', 'ADV', 'VVFIN', 'VVPP', 'VAFIN', 'ADJD', 'VAINF', 'VMFIN', 'VVINF', 'VVIZU', 'VAPP')
+names(POS2) <- c('ADJA', 'NN', 'ADV', 'VVFIN', 'VVPP', 'VAFIN', 'ADJD', 'VAINF', 'VMFIN', 'VVINF', 'VVIZU', 'VAPP')
+par(mfrow=c(1,2))
+
+pie(POS2, main="Kuchendiagramm geschl. Wortarten")
+```
+
+Einen Barplot der Wortarten erstellen
+```{r barplot}
+barplot(sort(table(wordclass), decreasing = T), main="Barplot Wortarten")
+```
+
+Zugriff auf das Frameelement types, Länge der types und deren graphische Darstellung in einem Histogramm.
+``` {r Frameelement ansprechen}
+x$types
+```
+```{r}
+type.length <- nchar(types)
+mean(type.length)
+median(type.length)
+```
+```{r histogramm}
+hist(type.length)
+hist(type.length, breaks = 0:max(type.length))
+abline(v = median(type.length), col = 'red', lwd = 2)
+abline(v = mean(type.length), col = 'green', lwd = 2)
+abline(v = which.max(tabulate(type.length)), col = 'blue', lwd = 2)
+```

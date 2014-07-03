@@ -8,7 +8,7 @@ library(XML)
 tokens <- NULL
 
 xmlEventParse(
-  "../data/t_990505_47.xml", 
+  "t_890102_84.xml", 
   handlers = list(
     't' = function(name, attr) {
       tokens <<- c(tokens, attr['word'])
@@ -39,9 +39,50 @@ m = as.matrix(myDTM)
 sorted.matrix <- sort(rowSums(m), decreasing = TRUE)
 
 wordcloud(names(sorted.matrix), sorted.matrix, scale=c(4,0.5),
-          min.freq = 1, max.words = 20,
-          colors = brewer.pal(8, "Dark2"))
+          min.freq = 1, max.words = 30,colors = brewer.pal(8, "Dark2"))
+
+```{r dataframe}
+    Wortart <- c("ADJ", "ADV", "N", "KONJ", "PRAEP")
+    TokenFrequenz <- c(421, 337, 1411, 458, 455)
+    TypenFrequenz <- c(271, 103, 735, 18, 37)
+    Klasse <- c("offen", "offen", "offen", "geschlossen", "geschlossen")
+
+    x <- data.frame(Wortart, TokenFrequenz, TypenFrequenz, Klasse)
+x
+    str(x) # Was ist mit Factors passiert?
+
+    x <- data.frame(Wortart, TokenFrequenz, TypenFrequenz, Klasse, row.names=Wortart)
+x
 ```
+```{r Frame speichern}
+ write.table(x, file="datei1", sep='\t') 
+```
+
+```{r Frame einlesen}
+x <- read.table(file='datei1', header=TRUE)
+
+```
+```{r Frameelemente ansprechen}
+ x$TokenFrequenz
+    x$Klasse
+
+    attach(x)
+    TokenFrequenz
+    Klasse
+
+    x[2, 3] # 2. Zeile, 3. Spalte
+    x[2,] # 2. Zeile
+    x[,3] # 3. Spalte
+    x[2] #!!! 2. Spalte
+
+    x[2:3, 3:4] # Subset of a frame
+x[,c( 1, 2, 4)]
+
+```
+
+
+
+
 
 ## Dataframes anlegen
 
